@@ -32,7 +32,7 @@ async function setAuto($: EngineInterface, on: boolean) {
   await $.store.set('isAuto', on)
 }
 
-async function rewrite($: EngineInterface, text: string): Promise<string | null> {
+async function rewrite($: EngineInterface, text: string): Promise<string | 'keep' | 'error'> {
   const r = await $.model.complete({
     model: MODEL,
     system: SYSTEM,
@@ -42,10 +42,11 @@ async function rewrite($: EngineInterface, text: string): Promise<string | null>
   })
   if (!r.isAnswered) {
     $.ui.toast(`Prompt Master couldn't rewrite: ${r.reason}`)
-    return null
+    return 'error'
   }
   const out = r.text.trim()
-  if (out.length === 0 || out.includes(KEEP)) return null
+  if (out.length === 0) return 'error'
+  if (out.includes(KEEP)) return 'keep'
   return out
 }
 
@@ -60,9 +61,9 @@ async function rewriteDraft($: EngineInterface) {
   await update($, isBusy, () => true)
   try {
     const better = await rewrite($, text)
-    if (!better) {
+    if (better === 'keep') {
       $.ui.toast('Prompt Master: already clear, left as is')
-    } else {
+    } else if (better !== 'error') {
       await update($, original, () => box.text)
       await $.prompt.fill({ text: better, mode: 'replace' })
       $.ui.toast('Prompt rewritten — review it and press Enter to send')
@@ -84,11 +85,13 @@ async function onCommand($: EngineInterface, e: { args?: string }) {
   }
   if (arg) {
     const better = await rewrite($, arg)
-    if (!better) return { text: 'Prompt Master could not rewrite that.' }
+    if (better === 'keep') return { text: 'Already clear: no rewrite needed. Send it as is.' }
+    if (better === 'error') return { text: 'Prompt Master could not reach the model; try again.' }
     await $.prompt.fill({ text: better, mode: 'replace' })
     return { text: 'Rewritten prompt placed in the prompt box — review and press Enter.' }
   }
-  return { text: 'Usage: /pm <rough prompt> · /pm auto on|off' }
+  const auto = await read($, isAuto)
+  return { text: `Auto mode is ${auto ? 'ON' : 'OFF'}. Usage: /pm <rough prompt> · /pm auto on|off` }
 }
 
 export const register: Register = on => {
@@ -117,7 +120,7 @@ export const register: Register = on => {
     await update($, isBusy, () => true)
     try {
       const better = await rewrite($, e.text)
-      if (!better) return next(e)
+      if (better === 'keep' || better === 'error') return next(e)
       const note =
         'Prompt Master (auto mode) rewrote the user\'s message before it reached you. ' +
         'The message above is the rewrite. What the user actually typed was:\n\n' +

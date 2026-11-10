@@ -3,7 +3,7 @@ import { expect, test } from 'claude-code/testing'
 const BAND = {
   plugin: 'prompt-master',
   component: 'AbovePrompt',
-  props: { hasSurvey: false, isCollapsed: false, isWorking: false, maxRows: 10, scroll: { offset: 0, bodyRows: 10 } },
+  props: { hasSurvey: false, isCollapsed: false, isWorking: false, maxRows: 10, bodyColumns: 80, scroll: { offset: 0, bodyRows: 10 }, view: {} },
 } as const
 
 test('the button rewrites the draft and Undo restores it', async ($, on) => {
@@ -16,7 +16,7 @@ test('the button rewrites the draft and Undo restores it', async ($, on) => {
   on('model.complete', () => ({ value: {
     isAnswered: true,
     text: 'Build a login page with email and password fields.',
-    usage: { input_tokens: 1, output_tokens: 1 },
+    usage: { input_tokens: 1, output_tokens: 1, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 },
   } }))
   on('ui.toast', () => ({ value: undefined }))
 
@@ -41,7 +41,7 @@ test('auto mode rewrites a submitted prompt and is remembered', async ($, on) =>
   on('model.complete', () => ({ value: {
     isAnswered: true,
     text: 'Better prompt',
-    usage: { input_tokens: 1, output_tokens: 1 },
+    usage: { input_tokens: 1, output_tokens: 1, cache_read_input_tokens: 0, cache_creation_input_tokens: 0 },
   } }))
   on('prompt.submit', (_, e) => {
     sent = e.text
@@ -49,7 +49,7 @@ test('auto mode rewrites a submitted prompt and is remembered', async ($, on) =>
   })
   const ui = await $.ui.mount({ ...BAND, surface: 'desktop' })
   await ui.press({ key: 'prompt-master-auto' })
-  await $.prompt.submit({ text: 'rough' })
+  await $.prompt.submit({ text: 'rough', wait: false, origin: { kind: 'composer' } })
   expect(sent).toBe('Better prompt')
   expect(stored.isAuto).toBe(true)
   await ui.unmount()

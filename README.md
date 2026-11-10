@@ -35,6 +35,7 @@ In the desktop app: click **+** next to the prompt box, then **Plugins**, **Add 
 ## Use
 
 - `/pm <rough prompt>` — puts the improved prompt in the prompt box to review and send.
+- `/pm` on its own shows whether auto mode is on.
 - `/pm auto on` — every prompt you send is improved automatically; remembered across sessions. `/pm auto off` turns it off.
 - In the terminal, a **✨ Prompt Master** bar above the prompt box rewrites your draft in one click, with **Auto** and **Undo rewrite** buttons. (The web app doesn't draw plugin buttons; use `/pm` there.)
 - `/prompt-master` is the long name of `/pm`.

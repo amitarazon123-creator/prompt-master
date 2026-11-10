@@ -1,6 +1,6 @@
 {
   "name": "prompt-master",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Rewrites your rough prompt into a sharper one before you send it",
   "types": "./types/index.d.ts",
   "license": "MIT",
