@@ -10,21 +10,27 @@ It judges each prompt and picks a level:
 
 ## Install
 
-At the prompt of a Claude Code terminal session:
+In Claude Code (terminal), run these two commands at the prompt:
 
 ```
-/plugin install prompt-master --marketplace amitarazon123-creator/prompt-master
+/plugin marketplace add amitarazon123-creator/prompt-master
 ```
 
-From a shell:
+```
+/plugin install prompt-master@prompt-master
+```
+
+Or from a shell:
 
 ```bash
-claude plugin install prompt-master --marketplace amitarazon123-creator/prompt-master
+claude plugin marketplace add amitarazon123-creator/prompt-master
+```
+
+```bash
+claude plugin install prompt-master@prompt-master
 ```
 
 In the desktop app: click **+** next to the prompt box, then **Plugins**, **Add marketplace** with `amitarazon123-creator/prompt-master`, then **Add plugin**.
-
-Answer `y` to add the marketplace, then pick a scope (user scope makes it available in every session).
 
 ## Use
 
